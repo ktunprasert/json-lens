@@ -2,6 +2,9 @@
 
 A dependency-free Chrome/Edge DevTools extension for inspecting network JSON. Open a response, explore a lazy tree, find keys or values, and extract data with JSONPath or a small jq-style language. Processing stays inside the extension.
 
+<img width="1134" height="764" alt="image" src="https://github.com/user-attachments/assets/9f3915f1-7d01-4c17-91a1-5f9912d98b7b" />
+
+
 ## Install
 
 1. Open `chrome://extensions` (Edge: `edge://extensions`).
