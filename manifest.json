@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "JSON Lens",
+  "version": "0.1.0",
+  "description": "Inspect network JSON in DevTools with a searchable tree, JSONPath, and jq-style queries.",
+  "devtools_page": "devtools.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; worker-src 'self'"
+  }
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON Lens</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header class="app-header">
+    <span class="logo">{ }</span><h1>JSON Lens</h1><span class="tagline">Make responses readable.</span>
+    <div class="spacer"></div>
+    <button id="import-open">Paste JSON</button><button id="help-open" aria-label="Query help">Query help</button>
+  </header>
+  <main>
+    <aside class="requests" aria-label="Network requests">
+      <div class="section-heading"><h2>Requests <span id="request-count" class="badge">0</span></h2><button id="clear" class="quiet">Clear</button></div>
+      <div class="capture-controls"><button id="record" aria-pressed="true">● Recording</button><label><input type="checkbox" id="preserve"> Preserve log</label></div>
+      <input id="request-filter" class="search" type="search" placeholder="Filter URL, method, status…" aria-label="Filter requests">
+      <label class="json-only"><input type="checkbox" id="json-only" checked> JSON responses only</label>
+      <div id="request-list" class="request-list" aria-label="Captured requests"></div>
+      <p class="capture-note">Last 300 requests · captured while DevTools is open</p>
+    </aside>
+    <section class="inspector" aria-label="JSON inspector">
+      <div class="response-heading"><span id="response-method" class="method">JSON</span><div id="response-url">Select a request to inspect</div></div>
+      <div id="response-meta" class="response-meta">Reload the inspected page to capture its requests.</div>
+      <form id="query-form" class="query-bar">
+        <label class="sr-only" for="query-mode">Query language</label>
+        <select id="query-mode"><option value="jsonpath">JSONPath</option><option value="jq">jq subset</option></select>
+        <label class="sr-only" for="query">Query expression</label>
+        <input id="query" spellcheck="false" autocomplete="off" value="$" placeholder="$.data.items[*]">
+        <button id="run" class="primary" type="submit" disabled>Run</button>
+        <button id="reset" type="button" disabled>Reset</button>
+      </form>
+      <div class="tree-toolbar">
+        <input id="tree-search" type="search" placeholder="Find keys or values…" aria-label="Find keys or values in results" disabled>
+        <span id="result-count" class="muted"></span><div class="spacer"></div>
+        <button id="collapse" disabled>Collapse</button><button id="copy-result" disabled>Copy result</button>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div id="tree" class="tree" aria-label="JSON tree">
+        <div class="empty"><span class="empty-symbol">{ … }</span><h2>Your JSON, without the digging.</h2><p>Select a captured response, or paste JSON to start.<br>Filter paths. Transform arrays. Copy exactly what you need.</p><button id="demo" class="primary">Try sample response</button></div>
+      </div>
+      <footer class="selection-bar"><code id="selected-path">Select a tree node to see its path</code><div class="spacer"></div><button id="copy-path" disabled>Copy path</button><button id="copy-value" disabled>Copy value</button></footer>
+    </section>
+  </main>
+  <dialog id="import-dialog">
+    <form id="import-form">
+      <h2>Paste a JSON response</h2><p>In Network, right-click a request → Copy → Copy response. Paste here.</p>
+      <label class="sr-only" for="import-text">JSON response</label><textarea id="import-text" spellcheck="false" placeholder='{"data": []}' required></textarea>
+      <p id="import-error" role="alert"></p>
+      <div class="dialog-actions"><button type="button" id="import-cancel">Cancel</button><button type="submit" class="primary">Inspect JSON</button></div>
+    </form>
+  </dialog>
+  <dialog id="help-dialog">
+    <h2>A smaller path to the answer</h2>
+    <p>Queries always run against the original response. Blank queries return the full response.</p>
+    <h3>JSONPath subset</h3>
+    <dl><dt><code>$.data.users[0]</code></dt><dd>Properties and array indices (negative indices supported)</dd><dt><code>$["unusual.key"]</code></dt><dd>Quoted property names</dd><dt><code>$.data.users[*].name</code></dt><dd>Wildcard traversal</dd><dt><code>$..name</code></dt><dd>Recursive property search; <code>$..*</code> returns descendants</dd><dt><code>$.data.users[0:5]</code></dt><dd>Array slices, end exclusive</dd></dl>
+    <h3>jq subset</h3>
+    <dl><dt><code>.data.users[] | select(.active == true) | .name</code></dt><dd>Stream, filter, project</dd><dt><code>.data.users | map(.name)</code></dt><dd>Collect transformed items into an array</dd><dt><code>.data.users | sort_by(.age) | reverse</code></dt><dd>Sort and reverse arrays</dd><dt><code>[.data.users[] | .name]</code></dt><dd>Collect a stream</dd><dt><code>.data | keys</code></dt><dd>Also: <code>length</code>, <code>type</code>, <code>sort</code>, slices, comparisons, <code>and</code>, <code>or</code></dd></dl>
+    <p>Subset only: no JSONPath predicates/unions, jq object constructors, arithmetic, variables, regex, or custom functions. Missing JSONPath properties yield no match; missing jq object properties yield <code>null</code>. Multiple outputs appear in a synthetic array; copied paths then refer to that result array.</p>
+    <p>Right-click a tree node to copy its JSONPath, jq path, or value. Search shows matching nodes with full paths. Queries run locally in a worker, with a 2-second timeout.</p>
+    <div class="dialog-actions"><button id="help-close" class="primary">Got it</button></div>
+  </dialog>
+  <div id="context-menu" class="context-menu" role="menu" hidden></div>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
